@@ -20,7 +20,8 @@
 	export let items;
 	let quizItems;
 	let currentIndex = 0;
-	let showAnswer = false;
+	let show = false;
+	let questionsFirst = true;
 	const shuffleArray = (array) => {
 		let newArray = array;
 		for (let i = newArray.length - 1; i > 0; i--) {
@@ -36,7 +37,7 @@
 		quizItems = shuffleArray(items);
 	};
 	const nextQuestion = () => {
-		showAnswer = false;
+		show = false;
 		if (currentIndex == quizItems.length - 1) {
 			startQuiz();
 		} else {
@@ -46,17 +47,33 @@
 </script>
 
 <div class="bg-gray-300 select-none grid place-items-center h-screen w-screen">
+	<button
+		class="bg-green-500 p-2 text-gray-700 z-20 fixed bottom-4 right-4"
+		on:click={() => (questionsFirst = !questionsFirst)}>REVERSE</button
+	>
 	{#if quizItems}
-		{#if showAnswer}
-			<div class="max-w-xl mx-auto">
-				<h1 class="font-bold text-4xl text-center">{quizItems[currentIndex].answer}</h1>
-				<div class="absolute inset-0" on:click={nextQuestion} />
+		<div class="max-w-xl flex w-full h-full flex-col mx-auto">
+			<div class="flex-1 flex flex-col justify-center">
+				{#if questionsFirst}
+					<h1 class="font-semibold text-2xl text-center">{quizItems[currentIndex].question}</h1>
+				{:else}
+					<h1 class="font-bold text-4xl text-center">{quizItems[currentIndex].answer}</h1>
+				{/if}
 			</div>
+			<div class="flex-1 flex flex-col justify-center">
+				{#if show}
+					{#if questionsFirst}
+						<h1 class="font-bold text-4xl text-center">{quizItems[currentIndex].answer}</h1>
+					{:else}
+						<h1 class="font-semibold text-2xl text-center">{quizItems[currentIndex].question}</h1>
+					{/if}
+				{/if}
+			</div>
+		</div>
+		{#if show}
+			<div class="absolute inset-0" on:click={nextQuestion} />
 		{:else}
-			<div class="max-w-xl mx-auto">
-				<h1 class="font-semibold text-2xl text-center">{quizItems[currentIndex].question}</h1>
-				<div class="absolute inset-0" on:click={() => (showAnswer = true)} />
-			</div>
+			<div class="absolute inset-0" on:click={() => (show = true)} />
 		{/if}
 	{:else}
 		<div on:click={startQuiz} class="absolute inset-0 grid place-items-center">
